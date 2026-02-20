@@ -16,7 +16,8 @@ import {
   faCalendarAlt,
   faNotesMedical,
   faTag,
-  faPlus
+  faPlus,
+  faWarning
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -39,6 +40,7 @@ export class AppointmentFormComponent implements OnInit {
   selectedDateRange: any;
   selectedStartDate = '';
   selectedEndDate = '';
+  conflictingAppointments: Appointment[] = [];
   minDate: Dayjs = dayjs();
   
   dateRangeLocale = {
@@ -63,6 +65,7 @@ export class AppointmentFormComponent implements OnInit {
   faCalendarAlt = faCalendarAlt;
   faNotesMedical = faNotesMedical;
   faTag = faTag;
+  faWarning = faWarning;
 
   constructor(
     private fb: FormBuilder,
@@ -173,6 +176,14 @@ export class AppointmentFormComponent implements OnInit {
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const day = date.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
+  }
+
+  formatParticipants(appointment: Appointment) {
+    if (appointment.participants && appointment.participants.length > 0) {
+      return appointment.participants.map(p => p.name).join(", ");
+    }
+
+    return "";
   }
 
   addParticipant(): void {

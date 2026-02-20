@@ -89,12 +89,43 @@
           <div class="invalid-feedback" *ngIf="appointmentForm.get('dateRange')?.invalid && appointmentForm.get('dateRange')?.touched">
             Please select a date range.
           </div>
-          <div class="form-text" *ngIf="selectedStartDate && selectedEndDate">
-            Selected: {{ selectedStartDate }} to {{ selectedEndDate }}
-          </div>
         </div>
       </div>
     </div>
+
+    <!-- Conflicting Appointments -->
+     @if (selectedDateRange && conflictingAppointments && conflictingAppointments.length > 0) {
+      <div class="row">
+        <div class="col-md-12">
+          <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <div class="d-flex align-items-center">
+              <fa-icon [icon]="faWarning" class="me-2"></fa-icon>
+              <strong>Conflicting Appointments Found</strong>
+            </div>
+            <div class="mt-2">
+              <small>The following appointments conflict with your selected time slot:</small>
+            </div>
+            <div class="mt-2">
+              <div *ngFor="let conflict of conflictingAppointments" class="conflict-item mb-2">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <strong>{{ conflict.title }}</strong>
+                    <div class="small text-muted">
+                      {{ conflict.startDate | date: 'dd/MM/yyyy hh:mma' }} - {{ conflict.endDate | date: 'hh:mma' }}
+                    </div>
+                    @if (conflict.participants && conflict.participants.length > 0) {
+                      <div class="small">
+                        Participants: {{ formatParticipants(conflict) }}
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+     }
 
 
 

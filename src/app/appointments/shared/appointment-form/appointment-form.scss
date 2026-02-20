@@ -184,4 +184,19 @@
       }
     }
   }
+
+  .conflict-item {
+    padding: 0.75rem;
+    border-left: 4px solid #ffc107;
+    background-color: #fff8e1;
+    border-radius: 4px;
+
+    strong {
+      color: #333;
+    }
+
+    .text-muted {
+      color: #6c757d;
+    }
+  }
 }
