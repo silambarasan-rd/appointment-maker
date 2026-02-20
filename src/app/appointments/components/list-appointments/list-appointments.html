@@ -9,13 +9,13 @@
 
   <div class="row">
     <div class="col-12">
-      @if (appointments.length === 0) {
+      @if (appointments().length === 0) {
         <div class="alert alert-info" role="alert">
           <i class="bi bi-info-circle"></i> No appointments found. Add your first appointment!
         </div>
       } @else {
         <div class="list-group">
-          @for (appointment of appointments; track appointment.id) {
+          @for (appointment of appointments(); track appointment.id) {
             <div class="list-group-item list-group-item-action">
               <div class="d-flex w-100 justify-content-between align-items-start">
                 <div class="flex-grow-1 appointment-item-container">
@@ -25,25 +25,27 @@
                       {{ appointment.status | titlecase }}
                     </span>
                   </div>
-                  <p class="mb-2 text-muted appointment-notes">
-                    {{ appointment.notes }}
-                  </p>
+                  @if (appointment.notes) {
+                    <p class="mb-2 text-muted appointment-notes">
+                      {{ appointment.notes }}
+                    </p>
+                  }
                   <div class="d-flex flex-row gap-1">
                     @for (participant of appointment.participants; track participant.id) {
                       <span class="badge bg-secondary">
                         <fa-icon [icon]="faPerson"></fa-icon>
-                        {{ participant.name }}
+                        {{ participant.full_name }}
                       </span>
                     }
                   </div>
                   <div class="appointment-time">
                     <div class="appointment-date">
                       <fa-icon [icon]="faCalendarDate"></fa-icon>
-                       {{ getFormattedDate(appointment.startDate) }}
+                       {{ getFormattedDate(appointment.start_time) }}
                     </div>
                     <div class="appointment-interval">
                       <fa-icon [icon]="faClock"></fa-icon>
-                      {{ getTimeRange(appointment.startDate, appointment.endDate) }}
+                      {{ getTimeRange(appointment.start_time, appointment.end_time) }}
                     </div>
                   </div>
                 </div>

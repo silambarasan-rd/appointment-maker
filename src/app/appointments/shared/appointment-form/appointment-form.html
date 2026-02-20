@@ -6,7 +6,7 @@
   <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()" class="appointment-form">
     <div class="row">
       <!-- Title Field -->
-      <div class="col-md-6">
+      <div class="col-md-12">
         <div class="form-group">
           <label for="title" class="form-label">
             Title <span class="required">*</span>
@@ -22,22 +22,6 @@
           <div class="invalid-feedback" *ngIf="appointmentForm.get('title')?.invalid && appointmentForm.get('title')?.touched">
             Title is required and must be at least 3 characters.
           </div>
-        </div>
-      </div>
-
-      <!-- Location Field -->
-      <div class="col-md-6">
-        <div class="form-group">
-          <label for="location" class="form-label">
-            Location
-          </label>
-          <input
-            id="location"
-            type="text"
-            class="form-control"
-            formControlName="location"
-            placeholder="Ex: Virtual / Coffe Shop, Koramangla"
-          />
         </div>
       </div>
     </div>
@@ -111,7 +95,7 @@
                   <div>
                     <strong>{{ conflict.title }}</strong>
                     <div class="small text-muted">
-                      {{ conflict.startDate | date: 'dd/MM/yyyy hh:mma' }} - {{ conflict.endDate | date: 'hh:mma' }}
+                      {{ conflict.start_time | date: 'dd/MM/yyyy hh:mma' }} - {{ conflict.end_time | date: 'hh:mma' }}
                     </div>
                     @if (conflict.participants && conflict.participants.length > 0) {
                       <div class="small">
@@ -182,7 +166,7 @@
           <!-- Selected Participants -->
           <div class="selected-participants mb-3" *ngIf="selectedParticipants.length > 0">
             <div class="participant-badge" *ngFor="let participant of selectedParticipants">
-              {{ participant.name }}
+              {{ participant.full_name }}
               <button
                 type="button"
                 class="btn-close"
@@ -202,7 +186,7 @@
                 *ngFor="let participant of getAvailableParticipants()"
                 (click)="selectParticipant(participant)"
               >
-                + {{ participant.name }}
+                + {{ participant.full_name }}
               </button>
             </div>
           </div>

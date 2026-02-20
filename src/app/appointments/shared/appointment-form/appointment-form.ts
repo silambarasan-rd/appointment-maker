@@ -9,7 +9,6 @@ import dayjs, { Dayjs } from 'dayjs';
 import { v4 as uuidv4 } from 'uuid';
 import {
   faClock,
-  faMapMarkerAlt,
   faUsers,
   faSave,
   faTimes,
@@ -58,7 +57,6 @@ export class AppointmentFormComponent implements OnInit {
   // FontAwesome Icons
   faPlus = faPlus;
   faClock = faClock;
-  faMapMarkerAlt = faMapMarkerAlt;
   faUsers = faUsers;
   faSave = faSave;
   faTimes = faTimes;
@@ -91,7 +89,6 @@ export class AppointmentFormComponent implements OnInit {
       dateRange: ['', Validators.required],
       startDate: [''],
       endDate: [''],
-      location: [''],
       status: ['scheduled', Validators.required]
     });
   }
@@ -116,13 +113,13 @@ export class AppointmentFormComponent implements OnInit {
 
   private initializeParticipants(): void {
     this.allParticipants = [
-      { id: 1, name: 'Silambarasan R' },
-      { id: 2, name: 'Vijay' },
-      { id: 3, name: 'Saju' },
-      { id: 4, name: 'Nikhil' },
-      { id: 5, name: 'Tanishka' },
-      { id: 6, name: 'Parvati' },
-      { id: 7, name: 'John' }
+      { id: 'c7860f6c-2319-447a-8f30-ff08ab9ed785', full_name: 'Silambarasan R' },
+      { id: uuidv4(), full_name: 'Vijay' },
+      { id: uuidv4(), full_name: 'Saju' },
+      { id: uuidv4(), full_name: 'Nikhil' },
+      { id: uuidv4(), full_name: 'Tanishka' },
+      { id: uuidv4(), full_name: 'Parvati' },
+      { id: uuidv4(), full_name: 'John' }
     ];
   }
 
@@ -145,8 +142,8 @@ export class AppointmentFormComponent implements OnInit {
   }
 
   private patchFormWithAppointment(appointment: Appointment): void {
-    const startDate = dayjs(appointment.startDate);
-    const endDate = dayjs(appointment.endDate);
+    const startDate = dayjs(appointment.start_time);
+    const endDate = dayjs(appointment.end_time);
 
     this.appointmentForm.patchValue({
       id: appointment.id,
@@ -158,7 +155,6 @@ export class AppointmentFormComponent implements OnInit {
       },
       startDate: startDate.format('YYYY-MM-DD'),
       endDate: endDate.format('YYYY-MM-DD'),
-      location: appointment.location,
       status: appointment.status
     });
 
@@ -180,7 +176,7 @@ export class AppointmentFormComponent implements OnInit {
 
   formatParticipants(appointment: Appointment) {
     if (appointment.participants && appointment.participants.length > 0) {
-      return appointment.participants.map(p => p.name).join(", ");
+      return appointment.participants.map(p => p.full_name).join(", ");
     }
 
     return "";
@@ -191,10 +187,10 @@ export class AppointmentFormComponent implements OnInit {
       return;
     }
 
-    const newId = Math.max(...this.allParticipants.map(p => p.id), 0) + 1;
+    const newId = uuidv4();
     const newParticipant: Participant = {
       id: newId,
-      name: this.participantInput.trim()
+      full_name: this.participantInput.trim()
     };
 
     if (!this.selectedParticipants.find(p => p.id === newId)) {
@@ -204,7 +200,7 @@ export class AppointmentFormComponent implements OnInit {
     }
   }
 
-  removeParticipant(participantId: number): void {
+  removeParticipant(participantId: string): void {
     this.selectedParticipants = this.selectedParticipants.filter(p => p.id !== participantId);
   }
 
@@ -238,10 +234,11 @@ export class AppointmentFormComponent implements OnInit {
       id: formValue.id || uuidv4(),
       title: formValue.title,
       notes: formValue.notes,
-      startDate,
-      endDate,
-      location: formValue.location,
+      start_time: startDate,
+      end_time: endDate,
       status: formValue.status,
+      is_conflict: false,
+      message: '',
       participants: this.selectedParticipants
     };
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { Appointment } from '../../models/appointment.model';
 import { AppointmentService } from '../../services/appointment.service';
 
@@ -18,7 +18,7 @@ export class ListAppointments implements OnInit {
   faClock = faClock
   faPerson = faUserAlt
 
-  appointments: Appointment[] = [];
+  appointments = signal<Appointment[]>([]);
 
   constructor(private appointmentService: AppointmentService) {}
 
@@ -29,7 +29,12 @@ export class ListAppointments implements OnInit {
   loadAppointments(): void {
     this.appointmentService.getAppointments().subscribe({
       next: (appointments) => {
-        this.appointments = appointments;
+        // Normalize status to lowercase to match our TypeScript model
+        const normalizedAppointments = appointments.map(apt => ({
+          ...apt,
+          status: apt.status.toLowerCase() as any
+        }));
+        this.appointments.set(normalizedAppointments);
       },
       error: (error) => {
         console.error('Error loading appointments:', error);

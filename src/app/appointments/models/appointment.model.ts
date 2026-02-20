@@ -1,16 +1,17 @@
 export interface Participant {
-  id: number;
-  name: string;
+  id: string;
+  full_name: string;
 }
 
 export interface Appointment {
   id: string;
   title: string;
-  notes: string;
-  startDate: Date;
-  endDate: Date;
-  location: string;
+  notes?: string;
+  start_time: Date;
+  end_time: Date;
   status: 'scheduled' | 'completed' | 'cancelled' | 'in-progress';
+  is_conflict: boolean;
+  message: string;
   participants: Participant[];
 }
 
