@@ -1,0 +1,75 @@
+.appointments-list {
+  h2 {
+    color: #333;
+    font-weight: 600;
+  }
+
+  .list-group-item {
+    border-radius: 8px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transform: translateY(-2px);
+    }
+
+    h5 {
+      color: #2c3e50;
+      font-weight: 600;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 0.35em 0.65em;
+      font-weight: 500;
+    }
+
+    .appointment-item-container {
+      overflow: hidden;
+    }
+
+    .appointment-notes {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .appointment-time {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-top: 12px;
+      padding: 10px 0;
+      border-radius: 4px;
+
+      .appointment-date {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #555;
+      }
+
+      .appointment-interval {
+        font-size: 0.85rem;
+        color: #666;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+      }
+    }
+
+    .btn-group {
+      .btn {
+        min-width: 40px;
+      }
+    }
+  }
+
+  .alert {
+    border-radius: 8px;
+
+    i {
+      margin-right: 8px;
+    }
+  }
+}
