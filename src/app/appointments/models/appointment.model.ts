@@ -23,4 +23,12 @@ export interface CreateAppointmentPayload {
   participants: string[];
 }
 
+export interface UpdateAppointmentPayload {
+  title: string;
+  description: string;
+  start_time: string;
+  end_time: string;
+  participants: string[];
+}
+
 export type AppointmentStatus = Appointment['status'];

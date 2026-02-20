@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Appointment, CreateAppointmentPayload } from '../models/appointment.model';
+import { Appointment, CreateAppointmentPayload, UpdateAppointmentPayload } from '../models/appointment.model';
 import { Observable, of, map } from 'rxjs';
 
 @Injectable({
@@ -17,8 +17,9 @@ export class AppointmentService {
   }
 
   getAppointmentById(id: string): Observable<Appointment | undefined> {
-    // TODO: Implement when API endpoint is available
-    return of(undefined);
+    return this.http.get<Appointment>(`${this.apiUrl}/appointment/v1/${id}/`).pipe(
+      map(appointment => this.normalizeAppointment(appointment))
+    );
   }
 
   addAppointment(payload: CreateAppointmentPayload): Observable<Appointment> {
@@ -27,9 +28,10 @@ export class AppointmentService {
     );
   }
 
-  updateAppointment(id: string, appointment: Appointment): Observable<Appointment> {
-    // TODO: Implement when API endpoint is available
-    return of(appointment);
+  updateAppointment(id: string, payload: UpdateAppointmentPayload): Observable<Appointment> {
+    return this.http.put<Appointment>(`${this.apiUrl}/appointment/v1/update/${id}/`, payload).pipe(
+      map(appointment => this.normalizeAppointment(appointment))
+    );
   }
 
   deleteAppointment(id: string): Observable<void> {

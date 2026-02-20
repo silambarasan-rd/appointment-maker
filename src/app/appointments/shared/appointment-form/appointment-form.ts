@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Appointment, CreateAppointmentPayload, Participant } from '../../models/appointment.model';
+import { Appointment, CreateAppointmentPayload, Participant, UpdateAppointmentPayload } from '../../models/appointment.model';
 import { AppointmentService } from '../../services/appointment.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import dayjs, { Dayjs } from 'dayjs';
@@ -218,28 +218,27 @@ export class AppointmentFormComponent implements OnInit {
     const startDateTime = this.selectedDateRange?.start || dayjs(formValue.startDate);
     const endDateTime = this.selectedDateRange?.end || dayjs(formValue.endDate);
     
-    const startDate = startDateTime.toDate();
-    const endDate = endDateTime.toDate();
+    const startDate = dayjs(startDateTime);
+    const endDate = dayjs(endDateTime);
 
     const payload: CreateAppointmentPayload = {
       title: formValue.title,
       description: formValue.notes || '',
-      start_time: startDate.toISOString(),
-      end_time: endDate.toISOString(),
+      start_time: startDate.format('YYYY-MM-DDTHH:mm:ssZ'),
+      end_time: endDate.format('YYYY-MM-DDTHH:mm:ssZ'),
       participants: this.selectedParticipants.map(participant => participant.full_name)
     };
 
     if (this.isEditMode && formValue.id && this.currentAppointment) {
-      const appointment: Appointment = {
-        ...this.currentAppointment,
+      const payload: UpdateAppointmentPayload = {
         title: formValue.title,
-        notes: formValue.notes,
-        start_time: startDate,
-        end_time: endDate,
-        participants: this.selectedParticipants
+        description: formValue.notes || '',
+        start_time: startDate.format('YYYY-MM-DDTHH:mm:ssZ'),
+        end_time: endDate.format('YYYY-MM-DDTHH:mm:ssZ'),
+        participants: this.selectedParticipants.map(participant => participant.full_name)
       };
 
-      this.appointmentService.updateAppointment(formValue.id, appointment).subscribe({
+      this.appointmentService.updateAppointment(formValue.id, payload).subscribe({
         next: () => {
           this.router.navigate(['/appointments']);
         },
