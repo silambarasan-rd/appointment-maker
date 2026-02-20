@@ -15,4 +15,12 @@ export interface Appointment {
   participants: Participant[];
 }
 
+export interface CreateAppointmentPayload {
+  title: string;
+  description: string;
+  start_time: string;
+  end_time: string;
+  participants: string[];
+}
+
 export type AppointmentStatus = Appointment['status'];

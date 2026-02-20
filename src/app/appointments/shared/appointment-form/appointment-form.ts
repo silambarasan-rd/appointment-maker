@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Appointment, Participant } from '../../models/appointment.model';
+import { Appointment, CreateAppointmentPayload, Participant } from '../../models/appointment.model';
 import { AppointmentService } from '../../services/appointment.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import dayjs, { Dayjs } from 'dayjs';
@@ -14,7 +14,6 @@ import {
   faTimes,
   faCalendarAlt,
   faNotesMedical,
-  faTag,
   faPlus,
   faWarning
 } from '@fortawesome/free-solid-svg-icons';
@@ -41,19 +40,13 @@ export class AppointmentFormComponent implements OnInit {
   selectedEndDate = '';
   conflictingAppointments: Appointment[] = [];
   minDate: Dayjs = dayjs();
+  currentAppointment?: Appointment;
   
   dateRangeLocale = {
     format: "DD/MM/YYYY HH:mm",
     displayFormat: 'DD/MM/YYYY hh:mm A'
   };
   
-  statusOptions = [
-    { value: 'scheduled', label: 'Scheduled' },
-    { value: 'in-progress', label: 'In Progress' },
-    { value: 'completed', label: 'Completed' },
-    { value: 'cancelled', label: 'Cancelled' }
-  ];
-
   // FontAwesome Icons
   faPlus = faPlus;
   faClock = faClock;
@@ -62,7 +55,6 @@ export class AppointmentFormComponent implements OnInit {
   faTimes = faTimes;
   faCalendarAlt = faCalendarAlt;
   faNotesMedical = faNotesMedical;
-  faTag = faTag;
   faWarning = faWarning;
 
   constructor(
@@ -88,8 +80,7 @@ export class AppointmentFormComponent implements OnInit {
       notes: [''],
       dateRange: ['', Validators.required],
       startDate: [''],
-      endDate: [''],
-      status: ['scheduled', Validators.required]
+      endDate: ['']
     });
   }
 
@@ -142,6 +133,7 @@ export class AppointmentFormComponent implements OnInit {
   }
 
   private patchFormWithAppointment(appointment: Appointment): void {
+    this.currentAppointment = appointment;
     const startDate = dayjs(appointment.start_time);
     const endDate = dayjs(appointment.end_time);
 
@@ -154,8 +146,7 @@ export class AppointmentFormComponent implements OnInit {
         end: endDate
       },
       startDate: startDate.format('YYYY-MM-DD'),
-      endDate: endDate.format('YYYY-MM-DD'),
-      status: appointment.status
+      endDate: endDate.format('YYYY-MM-DD')
     });
 
     this.selectedParticipants = appointment.participants;
@@ -230,19 +221,24 @@ export class AppointmentFormComponent implements OnInit {
     const startDate = startDateTime.toDate();
     const endDate = endDateTime.toDate();
 
-    const appointment: Appointment = {
-      id: formValue.id || uuidv4(),
+    const payload: CreateAppointmentPayload = {
       title: formValue.title,
-      notes: formValue.notes,
-      start_time: startDate,
-      end_time: endDate,
-      status: formValue.status,
-      is_conflict: false,
-      message: '',
-      participants: this.selectedParticipants
+      description: formValue.notes || '',
+      start_time: startDate.toISOString(),
+      end_time: endDate.toISOString(),
+      participants: this.selectedParticipants.map(participant => participant.full_name)
     };
 
-    if (this.isEditMode && formValue.id) {
+    if (this.isEditMode && formValue.id && this.currentAppointment) {
+      const appointment: Appointment = {
+        ...this.currentAppointment,
+        title: formValue.title,
+        notes: formValue.notes,
+        start_time: startDate,
+        end_time: endDate,
+        participants: this.selectedParticipants
+      };
+
       this.appointmentService.updateAppointment(formValue.id, appointment).subscribe({
         next: () => {
           this.router.navigate(['/appointments']);
@@ -252,7 +248,7 @@ export class AppointmentFormComponent implements OnInit {
         }
       });
     } else {
-      this.appointmentService.addAppointment(appointment).subscribe({
+      this.appointmentService.addAppointment(payload).subscribe({
         next: () => {
           this.router.navigate(['/appointments']);
         },

@@ -113,30 +113,6 @@
 
 
 
-    <!-- Status Field -->
-    <div class="row">
-      <div class="col-md-6">
-        <div class="form-group">
-          <label for="status" class="form-label">
-            Status <span class="required">*</span>
-          </label>
-          <select
-            id="status"
-            class="form-select"
-            formControlName="status"
-            [class.is-invalid]="appointmentForm.get('status')?.invalid && appointmentForm.get('status')?.touched"
-          >
-            <option *ngFor="let status of statusOptions" [value]="status.value">
-              {{ status.label }}
-            </option>
-          </select>
-          <div class="invalid-feedback" *ngIf="appointmentForm.get('status')?.invalid && appointmentForm.get('status')?.touched">
-            Status is required.
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Participants Section -->
     <div class="row">
       <div class="col-12">
