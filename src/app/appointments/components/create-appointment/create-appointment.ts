@@ -7,5 +7,4 @@ import { Component } from '@angular/core';
   styleUrl: './create-appointment.scss',
 })
 export class CreateAppointment {
-
 }

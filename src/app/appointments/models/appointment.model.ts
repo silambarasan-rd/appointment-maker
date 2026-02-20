@@ -9,6 +9,7 @@ export interface Appointment {
   notes: string;
   startDate: Date;
   endDate: Date;
+  location: string;
   status: 'scheduled' | 'completed' | 'cancelled' | 'in-progress';
   participants: Participant[];
 }

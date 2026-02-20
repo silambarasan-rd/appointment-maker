@@ -1,0 +1,203 @@
+<div class="appointment-form-container">
+  <div class="form-header">
+    <h2>{{ isEditMode ? 'Edit Appointment' : 'Create Appointment' }}</h2>
+  </div>
+
+  <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()" class="appointment-form">
+    <div class="row">
+      <!-- Title Field -->
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="title" class="form-label">
+            Title <span class="required">*</span>
+          </label>
+          <input
+            id="title"
+            type="text"
+            class="form-control"
+            formControlName="title"
+            placeholder="Ex: Meeting with Vijay"
+            [class.is-invalid]="appointmentForm.get('title')?.invalid && appointmentForm.get('title')?.touched"
+          />
+          <div class="invalid-feedback" *ngIf="appointmentForm.get('title')?.invalid && appointmentForm.get('title')?.touched">
+            Title is required and must be at least 3 characters.
+          </div>
+        </div>
+      </div>
+
+      <!-- Location Field -->
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="location" class="form-label">
+            Location
+          </label>
+          <input
+            id="location"
+            type="text"
+            class="form-control"
+            formControlName="location"
+            placeholder="Ex: Virtual / Coffe Shop, Koramangla"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes Field -->
+    <div class="row">
+      <div class="col-12">
+        <div class="form-group">
+          <label for="notes" class="form-label">
+            Notes
+          </label>
+          <textarea
+            id="notes"
+            class="form-control"
+            formControlName="notes"
+            placeholder="Ex: Discuss about the project requirements and the timeline."
+            rows="3"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Date Range & Time -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group">
+          <label for="dateRange" class="form-label">
+            Date Range <span class="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="dateRange"
+            class="form-control"
+            formControlName="dateRange"
+            ngxDaterangepickerBootstrap
+            [locale]="dateRangeLocale"
+            [minDate]="minDate"
+            [maxDate]="null"
+            [timePicker]="true"
+            [timePickerIncrement]="5"
+            [alwaysShowCalendars]="true"
+            startKey="start"
+            endKey="end"
+            [(ngModel)]="selectedDateRange"
+            (change)="onDateRangeChange($event)"
+            placeholder="Select date range"
+            [class.is-invalid]="appointmentForm.get('dateRange')?.invalid && appointmentForm.get('dateRange')?.touched"
+          />
+          <div class="invalid-feedback" *ngIf="appointmentForm.get('dateRange')?.invalid && appointmentForm.get('dateRange')?.touched">
+            Please select a date range.
+          </div>
+          <div class="form-text" *ngIf="selectedStartDate && selectedEndDate">
+            Selected: {{ selectedStartDate }} to {{ selectedEndDate }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- Status Field -->
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="status" class="form-label">
+            Status <span class="required">*</span>
+          </label>
+          <select
+            id="status"
+            class="form-select"
+            formControlName="status"
+            [class.is-invalid]="appointmentForm.get('status')?.invalid && appointmentForm.get('status')?.touched"
+          >
+            <option *ngFor="let status of statusOptions" [value]="status.value">
+              {{ status.label }}
+            </option>
+          </select>
+          <div class="invalid-feedback" *ngIf="appointmentForm.get('status')?.invalid && appointmentForm.get('status')?.touched">
+            Status is required.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Participants Section -->
+    <div class="row">
+      <div class="col-12">
+        <div class="form-group">
+          <label class="form-label">
+            Participants <span class="required">*</span>
+          </label>
+
+          <!-- Participant Input -->
+          <div class="input-group mb-2">
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="participantInput"
+              [ngModelOptions]="{ standalone: true }"
+              placeholder="Type participant name and press Add"
+            />
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              (click)="addParticipant()"
+            >
+              <fa-icon [icon]="faPlus"></fa-icon>
+            </button>
+          </div>
+
+          <!-- Selected Participants -->
+          <div class="selected-participants mb-3" *ngIf="selectedParticipants.length > 0">
+            <div class="participant-badge" *ngFor="let participant of selectedParticipants">
+              {{ participant.name }}
+              <button
+                type="button"
+                class="btn-close"
+                (click)="removeParticipant(participant.id)"
+                title="Remove participant"
+              ></button>
+            </div>
+          </div>
+
+          <!-- Available Participants -->
+          <div class="available-participants" *ngIf="getAvailableParticipants().length > 0">
+            <small class="text-muted d-block mb-2">Or select from available:</small>
+            <div class="participant-options">
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-secondary"
+                *ngFor="let participant of getAvailableParticipants()"
+                (click)="selectParticipant(participant)"
+              >
+                + {{ participant.name }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Validation Error -->
+          <div class="invalid-feedback d-block" *ngIf="selectedParticipants.length === 0">
+            At least one participant is required.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="row form-actions">
+      <div class="col-12">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="appointmentForm.invalid || selectedParticipants.length === 0"
+        >
+          <fa-icon [icon]="faSave"></fa-icon> {{ isEditMode ? 'Update' : 'Create' }} Appointment
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="onCancel()">
+          <fa-icon [icon]="faTimes"></fa-icon> Cancel
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

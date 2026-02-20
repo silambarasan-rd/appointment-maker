@@ -7,5 +7,4 @@ import { Component } from '@angular/core';
   styleUrl: './edit-appointment.scss',
 })
 export class EditAppointment {
-
 }
